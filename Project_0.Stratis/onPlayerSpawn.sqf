@@ -56,6 +56,41 @@ player addEventHandler ["AnimChanged", {
 
 
 // Create a suspiciousness monitor for player
-NEW("suspiciousnessMonitor", [player]);
+//NEW("suspiciousnessMonitor", [player]);
 // Create a group monitor for east side
-NEW("groupMonitor", [EAST]);
+//NEW("groupMonitor", [EAST]);
+
+// Add fired event handler for the "... GRENADE!!!"
+player removeAllEventHandlers "Fired";
+player addEventHandler ["Fired", {
+	//Fired event handler for infantry
+	params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
+	
+	/*
+	diag_log "Fired!";
+	diag_log format ["   unit: %1, weapon: %2, muzzle: %3, mode: %4, ammo: %5, magazine: %6", _unit, _weapon, _muzzle, _mode, _ammo, _magazine];
+	diag_log format ["   projectile: %1", _projectile];
+	diag_log format ["   type projectile: %1, velocity: %2", typeof _projectile, vectorMagnitude (velocity _projectile)];
+	*/
+	
+	if ((typeof _projectile) == "GrenadeHand") then {
+		diag_log "Grenade!";
+		_projectile spawn { 
+			waitUntil {
+				//diag_log format [" Grenade speed: %1, time: %2", abs speed _this, time];
+				(abs speed _this) < 0.05
+			};
+			createVehicle ["Sign_Arrow_Large_Pink_F", getpos _this, [], 0, "CAN_COLLIDE"];
+			diag_log "Grenade is on the ground!";
+			
+			// Create a stimulus
+			private _stim = STIMULUS_NEW();
+			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_GRENADE);
+			STIMULUS_SET_SOURCE(_stim, _this);
+			STIMULUS_SET_POS(_stim, getPos _this);
+			STIMULUS_SET_RANGE(_stim, 20);
+			private _args = ["handleStimulus", [_stim]];
+			CALLM(gStimulusManager, "postMethodAsync", _args);
+		};
+	};
+}];

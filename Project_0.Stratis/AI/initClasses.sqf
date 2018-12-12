@@ -48,6 +48,11 @@ call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 
 // Unit AI classes
 call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
+
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\SensorUnitSalute.sqf";
+
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitAvoidGrenade.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitAvoidGrenade.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\SensorUnitGrenade.sqf";

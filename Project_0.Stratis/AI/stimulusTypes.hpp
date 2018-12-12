@@ -6,3 +6,6 @@
 
 // Someone has saluted to the unit
 #define STIMULUS_TYPE_UNIT_SALUTE	100
+
+// Grenade!
+#define STIMULUS_TYPE_GRENADE	101

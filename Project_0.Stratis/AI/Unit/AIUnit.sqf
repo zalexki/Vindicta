@@ -21,14 +21,14 @@ CLASS("AIUnit", "AI")
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
 		
 		// Initialize the world state
-		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		
 		// Initialize sensors
 		pr _sensorSalute = NEW("SensorUnitSalute", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorSalute]);
 		
-		//SETV(_thisObject, "worldState", _ws);
+		pr _sensorGrenade = NEW("SensorUnitGrenade", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorGrenade]);
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
