@@ -157,15 +157,15 @@ CLASS("ActionUnitArrest", "Action")
 					pr _handle = [_captor, _target] spawn {
 						params["_captor","_target"];
 						waitUntil {
-							_animationDone = false;
-							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
+							pr _animationDone = false;
+							pr _pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
 							_captor doMove _pos;
 							_captor doWatch _target;
-							_pos_search = getpos _target;
+							pr _pos_search = getpos _target;
 							sleep 0.5;
 
 							// play animation if close enough, finishing the script
-							if (_pos_search distance getpos _target < 0.1) then {
+							if (_pos_search distance getpos _captor < 1.8) then {
 								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
@@ -183,13 +183,6 @@ CLASS("ActionUnitArrest", "Action")
 									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
 								};
 
-								_captor playMove _animation;
-								_animationDone = true;
-
-								waitUntil {animationState _captor == _animation};
-								waitUntil {animationState _captor != _animation};
-								
-								_target playMoveNow "Acts_ExecutionVictim_Loop";
 								if(!isPlayer _target) then {
 									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
 									_target disableAI "MOVE"; // Disable AI Movement
@@ -198,12 +191,25 @@ CLASS("ActionUnitArrest", "Action")
 									_target allowFleeing 0; // Disable AI Fleeing
 									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
 								};
-								_target setVariable ["timeArrested", time+10];
 
-								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
+								if ((vectorMagnitude velocity _target) > 0.01) then {
+									systemChat "target moving";
+									if (isPlayer _target) then {
+										REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitCompromised", [_target], _target, false); //classNameStr, methodNameStr, extraParams, targets, JIP
+									};
+								} else {
+									_captor playMove _animation;
+									_animationDone = true;
+									waitUntil {animationState _captor == _animation};
+									waitUntil {animationState _captor != _animation};
+									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
+									_target setVariable ["timeArrested", time+10];	
+								};
+							} else {
+								pr _pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
+								_captor doMove _pos;
+								_captor doWatch _target;
 							};
-
-							//_target setVariable ["isMoving", _isMoving];
 							
 							_return = _animationDone;
 							_return
@@ -216,6 +222,7 @@ CLASS("ActionUnitArrest", "Action")
 					
 					T_SETV("spawnHandle", _handle);
 				} else {
+					// action failed, time out
 					if ((T_GETV("stateTimer") + 30) < time) exitWith {
 						T_SETV("stateMachine", 2); // action failed
 					};
