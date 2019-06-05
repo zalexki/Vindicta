@@ -255,7 +255,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]);
 				 		if (_loc != "") then { 	
 							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { 
-								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
+								_bInAllowedArea = true; 
+								//_hintKeys pushback HK_ALLOWEDAREA;
 							} else { 
 								_suspicionArr pushBack [SUSPICIOUS, "In military area"];
 								_hintKeys pushBack HK_MILAREA;
@@ -441,16 +442,17 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
+							_unit playMoveNow "Acts_ExecutionVictim_Loop";
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bCaptive", true);
-							[_unit] call fnc_UM_addActionUntieLocal;
+							//[_unit] call fnc_UM_addActionUntieLocal;
 							[_unit] call fnc_UM_addActionUntieMP;
 							_unit setVariable ["timeArrested", time+10, true];
+							systemChat "Arrested.";
 						}; // do once when state changed
 
 						// exit arrested state
 						if !(T_GETV("bCaptive")) then {
-							player playMoveNow "Acts_ExecutionVictim_Unbow";
 							T_CALLM("setState", [sUNDERCOVER]);
 							_unit setVariable [UNDERCOVER_TARGET, false, true];
 						};
@@ -568,7 +570,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			// messaged when player is being arrested
 			case SMON_MESSAGE_ARRESTED: {
+				if !(T_GETV("bCaptive")) then {
 				T_CALLM("setState", [sARRESTED]);
+				};
 			}; // end SMON_MESSAGE_ARRESTED
 
 			// delete dead unit's undercoverMonitor
@@ -613,11 +617,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		params ["_thisClass", ["_unit", objNull, [objNull]]];
 		pr _uM = _unit getVariable ["undercoverMonitor", ""];
 		if (_uM != "") then { // Sanity check
-			if !(GETV(_uM, "bCaptive")) then {
-				pr _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
-				CALLM1(_um, "postMessage", _msg);
-			};
+			pr _msg = MESSAGE_NEW();
+			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
+			CALLM1(_um, "postMessage", _msg);
 		};
 		OOP_INFO_0("onUnitArrested called.");
 	} ENDMETHOD;
