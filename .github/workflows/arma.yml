@@ -12,14 +12,14 @@ jobs:
     steps:
     - name: Checkout the source code
       uses: actions/checkout@master
-    - name: Validate SQF
-      run: python3 tools/SQF-validate/sqf_validator.py
     - name: Validate Config
       run: python3 tools/SQF-validate/config_style_checker.py
     - name: Check for BOM
       uses: arma-actions/bom-check@master
+      with:
+        path: 'Vindicta.Altis'
 
-  validate-with-vm:
+  validate-with-sqf-vm:
     runs-on: windows-latest
     steps:
     - name: Checkout the source code
@@ -28,12 +28,3 @@ jobs:
       run: |
         cd Vindicta.Altis
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout the source code
-      uses: actions/checkout@master
-    - name: Lint (sqflint)
-      uses: arma-actions/sqflint@master
-      continue-on-error: true # No failure due to many false-positives
