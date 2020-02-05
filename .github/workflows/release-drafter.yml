@@ -67,8 +67,8 @@ jobs:
     - name: Draft Release
       id: draft_release
       uses: release-drafter/release-drafter@v5.6.1
-      # env:
-      #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.token }}
 
     - name: echo upload_url
       run:
