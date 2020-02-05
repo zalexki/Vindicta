@@ -93,6 +93,10 @@ jobs:
     #    asset_path: ./build/vindicta.zip
     #    asset_name: vindicta.zip
     #    asset_content_type: application/zip
+    
+    - name: echo upload_url
+      run: |
+        echo ${{ steps.draft_release.outputs.upload_url }}
 
     - name: Download dev
       uses: actions/download-artifact@v1
