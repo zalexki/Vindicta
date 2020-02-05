@@ -33,7 +33,7 @@ jobs:
 
   build:
     runs-on: windows-latest
-    needs: [validate, validate-with-sqf-vm]
+    # needs: [validate, validate-with-sqf-vm]
     steps:
     - uses: actions/checkout@master
       
@@ -70,20 +70,24 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: echo upload_url
+      run:
+        echo ${{ steps.draft_release.outputs.upload_url }}
+      
     # ****** DISABLED ****** until we can get it working iteratively (i.e. replace existing release
-    #- name: Download build
+    # - name: Download build
     #  if: ${{ false }}
     #  uses: actions/download-artifact@v1
     #  with:
     #    name: build
-    #
-    #- name: Zip for Release
+    
+    # - name: Zip for Release
     #  run: |
     #    cd build
     #    zip -r vindicta.zip @vindicta
     #    ls
-    #
-    #- name: Upload build to draft release
+    
+    # - name: Upload build to draft release
     #  if: ${{ false }}
     #  uses: actions/upload-release-asset@v1.0.1
     #  env:
